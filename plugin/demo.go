@@ -32,12 +32,14 @@ type iamCredentials struct {
 // Config the plugin configuration.
 type Config struct {
 	BucketName string
+	Endpoint   string
 }
 
 // CreateConfig creates the default plugin configuration.
 func CreateConfig() *Config {
 	return &Config{
 		BucketName: "",
+		Endpoint:   "",
 	}
 }
 
@@ -45,6 +47,7 @@ func CreateConfig() *Config {
 type Demo struct {
 	next       http.Handler
 	bucketName string
+	endpoint   string
 	name       string
 	template   *template.Template
 }
@@ -55,8 +58,13 @@ func New(ctx context.Context, next http.Handler, config *Config, name string) (h
 		return nil, fmt.Errorf("bucket name cannot be empty")
 	}
 
+	if len(config.Endpoint) == 0 {
+		return nil, fmt.Errorf("endpoint cannot be empty")
+	}
+
 	return &Demo{
 		bucketName: config.BucketName,
+		endpoint:   config.Endpoint,
 		next:       next,
 		name:       name,
 		template:   template.New("demo").Delims("[[", "]]"),
@@ -104,7 +112,7 @@ func (a *Demo) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	newReq := mySign(req, a.bucketName)
+	newReq := mySign(req, a.bucketName, a.endpoint)
 
 	client := &http.Client{}
 	resp, err := client.Do(newReq)
@@ -130,7 +138,7 @@ func (a *Demo) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	return
 }
 
-func mySign(originalReq *http.Request, bucket string) *http.Request {
+func mySign(originalReq *http.Request, bucket string, endpoint string) *http.Request {
 	urlPath := originalReq.URL.Path
 
 	iam := getIamCredentials()
@@ -146,8 +154,8 @@ func mySign(originalReq *http.Request, bucket string) *http.Request {
 	signatureStep2 := b64.StdEncoding.EncodeToString([]byte(signatureStep1))
 	authorization := "AWS " + iam.AccessKeyId + ":" + signatureStep2
 
-	endpoint := "https://s3.us-east-1.amazonaws.com/" + resource
-	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
+	fullEndpoint := endpoint + "/" + resource
+	req, err := http.NewRequest(http.MethodGet, fullEndpoint, nil)
 	if err != nil {
 		fmt.Print(err)
 	}

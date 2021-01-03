@@ -19,3 +19,4 @@ http:
       plugin:
         dev:
           bucketName: "1flugel.it.lucashernangregori.com"
+          endpoint: "https://s3.us-east-1.amazonaws.com"
