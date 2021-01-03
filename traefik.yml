@@ -1,0 +1,24 @@
+pilot:
+    token: "4e561127-f9f5-4f66-9317-a189f865aa00"
+
+entryPoints:
+  web:
+   address: ":80"
+
+experimental:
+  devPlugin:
+    goPath: /home/ubuntu/traefik/plugins/
+    moduleName: plugindemo
+
+providers:
+  file:
+    filename: "/home/ubuntu/traefik/dynamic.yml"
+    watch: true
+
+accessLog:
+  filePath: "/var/log/traefik_access.log"
+  format: json
+  fields:
+   defaultMode: keep
+   headers:
+    defaultMode: keep

@@ -1,0 +1,11 @@
+displayName: Demo Plugin
+type: middleware
+
+import: plugindemo
+
+summary: '[Demo] Add Request Header'
+
+testData:
+  Headers:
+    X-Demo: test
+    X-URL: '{{URL}}'

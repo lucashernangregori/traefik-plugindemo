@@ -1,0 +1,21 @@
+http:
+  routers:
+    my-router:
+      rule: "Method(`GET`)"
+      service: service-foo
+      entryPoints:
+        - web
+      middlewares:
+        - my-plugin
+
+  services:
+   service-foo:
+      loadBalancer:
+        servers:
+          - url: "https://s3.us-east-1.amazonaws.com"
+  
+  middlewares:
+    my-plugin:
+      plugin:
+        dev:
+          bucketName: "1flugel.it.lucashernangregori.com"
