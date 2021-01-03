@@ -12,7 +12,7 @@ experimental:
 
 providers:
   file:
-    filename: "/home/ubuntu/traefik/dynamic.yml"
+    filename: "/etc/traefik/dynamic.yml"
     watch: true
 
 accessLog:
